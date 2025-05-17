@@ -1,0 +1,255 @@
+<!DOCTYPE html> 
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>三明医改舆情分析 - 搜索结果</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #005f6b;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 2em;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .search-bar {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 1em;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        section {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        section h2 {
+            font-size: 1.8em;
+            color: #005f6b;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 15px;
+        }
+
+        .result-item p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        .result-item .sentiment-label {
+            color: #005f6b;
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .keyword-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .keyword-suggestions a {
+            padding: 8px 16px;
+            border-radius: 25px;
+            background-color: #005f6b;
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .keyword-suggestions a:hover {
+            background-color: #003d47;
+        }
+
+        /* 舆论统计样式 */
+        .summary-box {
+            margin-top: 40px;
+            background-color: #e8f6f9;
+            border-left: 6px solid #005f6b;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .summary-box h3 {
+            margin-top: 0;
+            color: #005f6b;
+        }
+
+        .summary-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 1.1em;
+        }
+
+        .summary-stats div {
+            flex: 1 1 150px;
+        }
+
+        .summary-box p.summary-api {
+            margin-top: 15px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            font-style: italic;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        三明医改舆情分析 - 搜索结果
+    </header>
+
+    <!-- Search bar -->
+    <form action="/search" method="get">
+        <input type="text" name="keyword" class="search-bar" placeholder="请输入关键词" value="{{ keyword|default('') }}">
+    </form>
+
+    <!-- Keyword Suggestions -->
+    {% if keywords %}
+    <div class="keyword-suggestions">
+        {% for keyword_suggestion in keywords %}
+            <a href="{{ url_for('search', keyword=keyword_suggestion) }}">{{ keyword_suggestion }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Search Results Section -->
+    <section>
+        <h2>搜索结果</h2>
+        <!-- 结构化主题分析结果 -->
+        <!-- 搜索结果部分 -->
+        <section>
+
+        <!-- 新增按钮 -->
+        <button id="analyzeBtn" style="margin-top:40px;">实时形成主题词报告</button>
+
+        <!-- 主题分析结果显示区 -->
+        <div id="analysisResult" class="summary-box" style="display:none; white-space: pre-wrap; margin-top: 20px;"></div>
+        </section>
+
+        <script>
+        document.getElementById('analyzeBtn').addEventListener('click', () => {
+            const btn = document.getElementById('analyzeBtn');
+            btn.disabled = true;
+            btn.innerText = "分析中...";
+
+            // 从页面提取评论内容列表
+            const comments = Array.from(document.querySelectorAll('.result-item p strong + span, .result-item p:nth-child(1)'))
+                .map(el => el.textContent.trim())
+                .filter(t => t.length > 0);
+
+            fetch('/analyze_topics', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    keyword: "{{ keyword }}",
+                    comments: comments
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const analysisDiv = document.getElementById('analysisResult');
+                analysisDiv.style.display = 'block';
+                analysisDiv.textContent = data.analysis;
+                btn.innerText = "完成";
+            })
+            .catch(err => {
+                alert("调用分析接口失败：" + err);
+                btn.disabled = false;
+                btn.innerText = "形成主题词报告";
+            });
+        });
+        </script>
+
+
+        <h3>与关键词 "{{ keyword }}" 相关的评论：</h3>
+        <!-- 舆论统计与情感汇总 -->
+        {% if summary_stats %}
+        <div class="summary-box">
+            <h3>📊 舆论统计与情感标签汇总</h3>
+            <div class="summary-stats">
+                <div><strong>总评论数：</strong>{{ summary_stats.total_comments }}</div>
+                <div><strong>正面评论：</strong>{{ summary_stats.positive }}</div>
+                <div><strong>中性评论：</strong>{{ summary_stats.neutral }}</div>
+                <div><strong>负面评论：</strong>{{ summary_stats.negative }}</div>
+            </div>
+            <p class="summary-api">🔍 自动解读：{{ summary_stats.api_summary }}</p>
+        </div>
+        {% endif %}
+        <div class="result-list">
+            {% if search_results %}
+                {% for result in search_results %}
+                <div class="result-item">
+                    <p><strong>评论内容：</strong>{{ result.text }}</p>
+                    <p><strong>情感标签：</strong><span class="sentiment-label">{{ result.sentiment_label }}</span></p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>未找到相关评论。</p>
+            {% endif %}
+        </div>
+
+        <h3>相同主题的其他评论：</h3>
+        <div class="result-list">
+            {% if same_topic_comments %}
+                {% for topic_comment in same_topic_comments %}
+                <div class="result-item">
+                    <p><strong>评论内容：</strong>{{ topic_comment.text }}</p>
+                    <p><strong>情感标签：</strong><span class="sentiment-label">{{ topic_comment.sentiment_label }}</span></p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>暂无相同主题的其他评论。</p>
+            {% endif %}
+        </div>
+
+
+    </section>
+    <footer>
+        © 2025 三明医改舆情分析
+    </footer>
+</body>
+</html>

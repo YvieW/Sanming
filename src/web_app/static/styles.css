@@ -1,0 +1,314 @@
+/* Global styles */
+body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    background-color: #f0f4f8; /* Softer background color */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header and Titles */
+h1, h2 {
+    text-align: center;
+    color: #005f6b; /* Fresh teal color for titles */
+    margin-bottom: 15px;
+}
+
+h1 {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+h2 {
+    font-size: 2em;
+    margin-top: 50px;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 12px 20px;
+    font-size: 1.1em;
+    border-radius: 25px;
+    border: 2px solid #005f6b;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.search-bar:focus {
+    border-color: #3b8c97; /* Slightly darker teal when focused */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Keyword Suggestions */
+.keyword-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 10px;
+    max-width: 1200px; /* Limit the max width to match the image container */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.keyword-suggestions a {
+    padding: 8px 16px;
+    border-radius: 25px;
+    background-color: #005f6b;
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.keyword-suggestions a:hover {
+    background-color: #003d47;
+}
+
+/* Section Styles */
+section {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+}
+
+section h2 {
+    font-size: 1.8em;
+    margin-bottom: 30px;
+}
+
+/* Result Item */
+.result-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 15px;
+}
+
+.result-item p {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.result-item .sentiment-label {
+    color: #005f6b;
+    font-weight: bold;
+}
+
+/* Image Block Layout */
+.img-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px; /* Reduced gap between items */
+    flex-wrap: wrap;
+}
+
+/* For Topic Cloud Images */
+.img-block {
+    flex: 1 1 23%;
+    max-width: 24%; /* Ensure a maximum width of 4 items per row */
+    margin-bottom: 20px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.img-block:hover {
+    transform: scale(1.05); /* Slight scale-up effect when hovering */
+}
+
+.img-block h3 {
+    font-size: 1.2em;
+    color: #005f6b;
+    margin-bottom: 10px;
+}
+
+/* Image Styling for Wordcloud */
+.img-block img {
+    width: 100%;
+    height: auto;
+    max-height: 320px; /* Slightly larger image size */
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.img-block img:hover {
+    transform: scale(1.5); /* Slight zoom effect on hover */
+}
+
+/* Adjustments for Sentiment Analysis Images */
+.sentiment-img-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Increased gap between sentiment images */
+}
+
+.sentiment-img-container .img-block {
+    flex: 1 1 100%; /* Full row for each sentiment image */
+    max-width: 100%; /* Full width for each sentiment image */
+    text-align: center; /* Center align images */
+}
+
+.sentiment-img-container img {
+    width: auto; /* Keep original width proportion */
+    height: auto; /* Keep original height proportion */
+    max-width: 100%; /* Ensure it does not overflow the container */
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Footer Styles */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    font-size: 1.1em;
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 768px) {
+    .img-block {
+        flex: 1 1 45%; /* Stack images on smaller screens */
+    }
+
+    .sentiment-img-container {
+        flex-direction: column; /* Stack sentiment images vertically */
+    }
+
+    section {
+        padding: 20px 10px;
+    }
+
+    .img-block h3 {
+        font-size: 1em;
+    }
+
+    .sentiment-img-container img {
+        max-height: 400px; /* Adjust image size for smaller screens */
+    }
+
+    .keyword-suggestions a {
+        font-size: 0.9em;
+        padding: 6px 12px;
+    }
+}
+.policy-summary,
+.wechat-articles {
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 40px 20px;
+}
+.topic-interpretation {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.topic-block {
+  display: flex;
+  flex-direction: row;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.topic-image {
+  flex: 0 0 280px;
+  max-width: 280px;
+}
+
+.topic-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0;
+}
+
+.topic-text {
+  flex: 1;
+  padding: 20px;
+  font-size: 1em;
+  color: #333;
+}
+
+.topic-text h3 {
+  color: #005f6b;
+  margin-top: 0;
+  font-size: 1.3em;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .topic-block {
+    flex-direction: column;
+  }
+
+  .topic-image,
+  .topic-image img {
+    max-width: 100%;
+    flex: unset;
+  }
+}
+
+.structured-analysis {
+    margin-top: 40px;
+    background-color: #e8f6f9;
+    border-left: 6px solid #005f6b;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#analyzeBtn {
+  /* 基础样式 */
+  background-color: #007BFF; /* 蓝色背景 */
+  color: white; /* 文字颜色 */
+  border: none; /* 去掉边框 */
+  padding: 10px 20px; /* 内边距 */
+  font-size: 16px; /* 字体大小 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+  transition: background-color 0.3s ease; /* 背景颜色过渡效果 */
+
+  /* 圆角边框 */
+  border-radius: 5px;
+
+  /* 文字对齐 */
+  text-align: center;
+  vertical-align: middle;
+
+  /* 阴影效果 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* 防止按钮被选中 */
+  user-select: none;
+}
+
+/* 鼠标悬停时的样式 */
+#analyzeBtn:hover {
+  background-color: #0056b3; /* 悬停时背景颜色变深 */
+}
+
+/* 鼠标按下时的样式 */
+#analyzeBtn:active {
+  background-color: #003d82; /* 按下时背景颜色更深 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); /* 按下时阴影变小 */
+  transform: translateY(2px); /* 按下时按钮稍微下沉 */
+}

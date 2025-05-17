@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>舆情分析系统 - 三明医改</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #005f6b;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        header + h2 {
+            text-align: center;
+            color: #005f6b;
+            margin: 10px 0 30px 0;
+            font-weight: normal;
+        }
+
+        .policy-summary {
+            background-color: white;
+            max-width: 1200px;
+            margin: 0 auto 30px auto;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .policy-summary h2 {
+            color: #005f6b;
+            margin-top: 0;
+            font-size: 1.8em;
+        }
+
+        .policy-overview {
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        #policy-details {
+            display: none;
+            font-size: 0.95em;
+            color: #444;
+            line-height: 1.5;
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .btn-expand {
+            background-color: #005f6b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-expand:hover {
+            background-color: #003d47;
+        }
+
+        .wechat-articles {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px 30px;
+        }
+
+        .wechat-articles h3 {
+            color: #005f6b;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .wechat-articles ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .wechat-articles ul li a {
+            color: #005f6b;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .wechat-articles ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* 下面保留你原有样式 */
+        .search-bar {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 1em;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .keyword-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .keyword-suggestions a {
+            padding: 8px 16px;
+            border-radius: 25px;
+            background-color: #005f6b;
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .keyword-suggestions a:hover {
+            background-color: #003d47;
+        }
+
+        section {
+            padding: 30px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        section h2 {
+            font-size: 1.8em;
+            color: #005f6b;
+            margin-bottom: 20px;
+        }
+
+        .img-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .img-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1 1 23%;
+            box-sizing: border-box;
+        }
+
+        .img-block h3 {
+            font-size: 1.2em;
+            color: #005f6b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .sentiment-img-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sentiment-img-container .img-block {
+            flex: 1 1 100%;
+            max-width: 100%;
+        }
+
+        .sentiment-img-container img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 768px) {
+            .img-block {
+                flex: 1 1 45%;
+            }
+            section {
+                padding: 15px;
+            }
+            .img-block h3 {
+                font-size: 1em;
+            }
+            .sentiment-img-container {
+                flex-direction: column;
+            }
+            .sentiment-img-container img {
+                max-height: 400px;
+            }
+        }
+    </style>
+    <script>
+        function togglePolicyDetails() {
+            const details = document.getElementById('policy-details');
+            const btn = document.getElementById('btn-toggle-details');
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+                btn.textContent = '收起政策详情';
+            } else {
+                details.style.display = 'none';
+                btn.textContent = '展开政策详情';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>舆情分析系统</header>
+    <h2>以“三明医改”为例</h2>
+
+    <!-- 政策说明区域 -->
+    <div class="policy-summary">
+        <h2>{{ policy.title }}</h2>
+        <p class="policy-overview">{{ policy.overview }}</p>
+        <button class="btn-expand" id="btn-toggle-details" onclick="togglePolicyDetails()">展开政策详情</button>
+        <div id="policy-details">{{ policy.details | safe }}</div>
+    </div>
+
+    <!-- 相关公众号文章推荐 -->
+    <div class="wechat-articles">
+        <h3>相关公众号文章推荐</h3>
+        <ul>
+            <li><a href="https://weixin.sogou.com/weixin?query=三明医改" target="_blank" rel="noopener noreferrer">点击前往微信搜狗查看“三明医改”相关文章</a></li>
+        </ul>
+    </div>
+
+    <!-- Search bar -->
+    <form action="/search" method="get">
+        <input
+            type="text"
+            name="keyword"
+            class="search-bar"
+            placeholder="请输入关键词进行搜索"
+            value="{{ request.args.get('keyword', '') }}"
+            required
+        />
+    </form>
+
+    <!-- Keyword Suggestions -->
+    <div class="keyword-suggestions">
+        {% for keyword in keywords %}
+            <a href="{{ url_for('search', keyword=keyword[0]) }}">{{ keyword[0] }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Wordcloud Section -->
+    <section>
+        <h2>主题词云图</h2>
+        <div class="img-container">
+            {% for img in wordcloud_images %}
+                <div class="img-block">
+                    <h3>{{ loop.index }}号主题</h3>
+                    <img
+                        src="{{ url_for('serve_image', folder='wordcloud', filename=img) }}"
+                        alt="词云图 {{ img }}"
+                    />
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section>
+    <h2>主题要点解读</h2>
+    <div class="topic-interpretation">
+        
+        <!-- Topic 1 -->
+        <div class="topic-block">
+        <div class="topic-image">
+            <img src="{{ url_for('serve_image', folder='wordcloud', filename='topic_1_wordcloud.png') }}" alt="主题1词云" />
+        </div>
+        <div class="topic-text">
+            <h3>🔹 主题 #1：医生职业困境与转行意愿</h3>
+            <p><strong>关键词亮点：</strong>医院、医生、工资、行政、三甲、临床、转行、收入、年薪、学医、科研、职称</p>
+            <p><strong>核心解读：</strong></p>
+            <ul>
+            <li>该主题集中体现了医生尤其是年轻医务人员在当前体制下对收入、职业发展和个人前途的强烈焦虑。</li>
+            <li>“转行”“读博”“年薪”等词反映出部分医务工作者对当前岗位产生失望，考虑转型或深造。</li>
+            <li>“三甲”“行政”词频较高，暗示对大医院行政管理的批评与制度压力。</li>
+            <li>表情词（如“doge”“哭”“偷笑”“捂脸”）显示出调侃、无奈的情绪氛围。</li>
+            </ul>
+            <p><strong>情感倾向：</strong>消极为主，带有调侃与无力感。</p>
+        </div>
+        </div>
+
+        <!-- Topic 2 -->
+        <div class="topic-block">
+        <div class="topic-image">
+            <img src="{{ url_for('serve_image', folder='wordcloud', filename='topic_2_wordcloud.png') }}" alt="主题2词云" />
+        </div>
+        <div class="topic-text">
+            <h3>🔹 主题 #2：薪资不公与劳动强度反差</h3>
+            <p><strong>关键词亮点：</strong>哭、笑、工资、没、工作、高、低、夜班、绩效、私立、医技、改革</p>
+            <p><strong>核心解读：</strong></p>
+            <ul>
+            <li>“哭”“笑”“惹”等情绪性词频高，表达医务人员对“高劳动、低报酬”现状的强烈不满。</li>
+            <li>关键词组合如“夜班”“工作量”“绩效”揭示基层一线医生的过劳问题。</li>
+            <li>“高”“低”“收入”“私立”反映出公私立医院之间的收入待遇差距问题被广泛讨论。</li>
+            <li>“医改”出现在负面语境中，暗示改革在收入分配上引发争议。</li>
+            </ul>
+            <p><strong>情感倾向：</strong>明显负面，情绪集中于愤怒、委屈、讽刺。</p>
+        </div>
+        </div>
+
+        <!-- Topic 3 -->
+        <div class="topic-block">
+        <div class="topic-image">
+            <img src="{{ url_for('serve_image', folder='wordcloud', filename='topic_3_wordcloud.png') }}" alt="主题3词云" />
+        </div>
+        <div class="topic-text">
+            <h3>🔹 主题 #3：麻醉科与专业冷门的结构性困境</h3>
+            <p><strong>关键词亮点：</strong>麻醉、医生、医技、临床、医师、科室、降薪、私立、三甲、医疗</p>
+            <p><strong>核心解读：</strong></p>
+            <ul>
+            <li>“麻醉”作为主题词频最高的关键词，揭示该科室被关注或吐槽频繁，暗含“冷门科室被边缘化”的现象。</li>
+            <li>医技岗位频繁出现，显示出相关从业者对待遇、地位、晋升等方面存在不满。</li>
+            <li>“不用”“反正”“真的”“算”等口语词暗示医护群体的消极态度与自我调侃。</li>
+            <li>“私立”“三甲”“工资”再次引出对医院体系内部不平衡的讨论。</li>
+            </ul>
+            <p><strong>情感倾向：</strong>讽刺中夹杂疲惫，整体偏负面。</p>
+        </div>
+        </div>
+
+        <!-- Topic 4 -->
+        <div class="topic-block">
+        <div class="topic-image">
+            <img src="{{ url_for('serve_image', folder='wordcloud', filename='topic_4_wordcloud.png') }}" alt="主题4词云" />
+        </div>
+        <div class="topic-text">
+            <h3>🔹 主题 #4：对医改成效的现实落差与失望</h3>
+            <p><strong>关键词亮点：</strong>医生、失望、三明、医改、工资、病人、医保、满意度、医疗、疗效</p>
+            <p><strong>核心解读：</strong></p>
+            <ul>
+            <li>此主题中出现大量关于“失望”“满意度”“疗效”的词，反映出公众对三明医改初衷与实际落地效果之间的落差。</li>
+            <li>医生视角表达了对收入与社会尊重的下降的不满，患者视角则可能对医疗服务结果产生质疑。</li>
+            <li>“医保”“开药”“门诊”等词语涉及医疗成本控制、用药规范等政策影响。</li>
+            <li>“石化”“偷笑”暗含调侃与震惊的情绪。</li>
+            </ul>
+            <p><strong>情感倾向：</strong>批判性较强，负面为主，掺杂无奈与失望。</p>
+        </div>
+        </div>
+
+    </div>
+    </section>
+
+
+
+    <!-- Sentiment Analysis Section -->
+    <section>
+        <h2>情感分析图</h2>
+        <div class="sentiment-img-container">
+            {% for img in sentiment_images %}
+                <div class="img-block">
+                    <img
+                        src="{{ url_for('serve_image', folder='sentiment_analysis', filename=img) }}"
+                        alt="情感图 {{ img }}"
+                    />
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Search Results Section -->
+    {% if search_results %}
+        <section>
+            <h2>搜索结果</h2>
+            <h3>与关键词 "{{ keyword }}" 相关的评论：</h3>
+            <ul>
+                {% for result in search_results %}
+                    <li>
+                        <p><strong>评论内容：</strong>{{ result.text }}</p>
+                        <p><strong>情感标签：</strong>{{ result.sentiment_label }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h3>相同主题的其他评论：</h3>
+            <ul>
+                {% for topic_comment in same_topic_comments %}
+                    <li>
+                        <p><strong>评论内容：</strong>{{ topic_comment.text }}</p>
+                        <p><strong>情感标签：</strong>{{ topic_comment.sentiment_label }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+
+    <footer>© 2025 三明医改舆情分析</footer>
+</body>
+</html>
